@@ -16,11 +16,7 @@
   "build": {
     "appId": "cl.comunikados.audioencoder",
     "productName": "Comunikados Audio Encoder",
-    "copyright": "Copyright © 2025 Grup Comunikados — comunikados.cl",
     "directories": { "output": "dist" },
-    "extraResources": [
-      { "from": "resources/ffmpeg/ffmpeg.exe", "to": "ffmpeg/ffmpeg.exe" }
-    ],
     "win": {
       "target": [
         { "target": "nsis", "arch": ["x64"] },
@@ -31,8 +27,7 @@
       "oneClick": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Comunikados Audio Encoder",
-      "language": "3082"
+      "shortcutName": "Comunikados Audio Encoder"
     },
     "publish": {
       "provider": "github",
