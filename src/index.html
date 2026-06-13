@@ -208,7 +208,7 @@ body{background:#111;color:#e0e0e0;font-family:'Segoe UI',sans-serif;font-size:1
     <div class="timer-label">Tiempo en vivo</div>
   </div>
   <div class="log-area"><span class="log-text" id="logtext">Listo · Esperando inicio de transmisión</span></div>
-  <button class="btn-start" id="startbtn" onclick="toggleStream()">START TRANSMISSION</button>
+  <button class="btn-start" id="startbtn" onclick="toggleStream()">INICIAR TRANSMISIÓN</button>
 </div>
 
 <script>
@@ -279,7 +279,7 @@ async function toggleStream(){
     const r=window.encoder?await window.encoder.startStream(config):{ok:true}
     if(r.ok){
       streaming=true;sec=0
-      document.getElementById('startbtn').textContent='STOP TRANSMISSION'
+      document.getElementById('startbtn').textContent='DETENER TRANSMISIÓN'
       document.getElementById('startbtn').classList.add('stop')
       setStatus(true);setLog('Conectando al servidor...')
       timerInt=setInterval(()=>{sec++;const h=String(Math.floor(sec/3600)).padStart(2,'0');const m=String(Math.floor(sec%3600/60)).padStart(2,'0');const s=String(sec%60).padStart(2,'0');document.getElementById('timer').textContent=`${h}:${m}:${s}`},1000)
@@ -292,7 +292,7 @@ async function toggleStream(){
 }
 function stopUI(){
   streaming=false;clearInterval(timerInt);clearInterval(meterInt)
-  document.getElementById('startbtn').textContent='START TRANSMISSION'
+  document.getElementById('startbtn').textContent='INICIAR TRANSMISIÓN'
   document.getElementById('startbtn').classList.remove('stop')
   document.getElementById('timer').textContent='00:00:00'
   setStatus(false)
@@ -320,3 +320,5 @@ if(window.encoder){
 </script>
 </body>
 </html>
+
+ 
