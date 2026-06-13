@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 160">
+  <defs>
+    <style>
+      .brand { font-family: 'Segoe UI', Arial, sans-serif; font-weight: 700; letter-spacing: 2px; }
+      .sub   { font-family: 'Segoe UI', Arial, sans-serif; font-weight: 400; letter-spacing: 3px; }
+    </style>
+  </defs>
+
+  <!-- Fondo oscuro redondeado -->
+  <rect width="500" height="160" rx="14" fill="#111111"/>
+
+  <!-- Hexágono símbolo -->
+  <polygon points="80,28 106,38 106,74 80,84 54,74 54,38"
+           fill="#1a1a1a" stroke="#00c853" stroke-width="1.5"/>
+
+  <!-- Micrófono body -->
+  <rect x="73" y="41" width="14" height="24" rx="7" fill="#00c853"/>
+  <!-- Micrófono arco -->
+  <path d="M66 65 Q66 78 80 78 Q94 78 94 65"
+        fill="none" stroke="#00c853" stroke-width="2" stroke-linecap="round"/>
+  <line x1="80" y1="78" x2="80" y2="84" stroke="#00c853" stroke-width="2"/>
+  <line x1="73" y1="84" x2="87" y2="84" stroke="#00c853" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Ondas izquierda -->
+  <path d="M61 50 Q56 56 61 62" fill="none" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M55 47 Q48 56 55 65" fill="none" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+  <!-- Ondas derecha -->
+  <path d="M99 50 Q104 56 99 62" fill="none" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M105 47 Q112 56 105 65" fill="none" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- Nombre -->
+  <text x="128" y="62" class="brand" fill="#ffffff" font-size="22">COMUNIKADOS</text>
+  <text x="128" y="84" class="brand" fill="#00c853" font-size="14">AUDIO ENCODER</text>
+
+  <!-- Línea separadora -->
+  <line x1="128" y1="95" x2="478" y2="95" stroke="#00c853" stroke-width="0.6" opacity="0.35"/>
+
+  <!-- Subtítulo -->
+  <text x="128" y="111" class="sub" fill="#666666" font-size="9">BROADCAST SERIES · V1.0</text>
+
+  <!-- Barras ecualizador decorativas -->
+  <rect x="128" y="125" width="5" height="18" rx="2" fill="#00c853" opacity="0.85"/>
+  <rect x="137" y="118" width="5" height="25" rx="2" fill="#00c853" opacity="0.85"/>
+  <rect x="146" y="122" width="5" height="21" rx="2" fill="#00c853" opacity="0.85"/>
+  <rect x="155" y="114" width="5" height="29" rx="2" fill="#00c853" opacity="0.85"/>
+  <rect x="164" y="120" width="5" height="23" rx="2" fill="#00c853" opacity="0.85"/>
+  <rect x="173" y="127" width="5" height="16" rx="2" fill="#00c853" opacity="0.65"/>
+  <rect x="182" y="119" width="5" height="24" rx="2" fill="#00c853" opacity="0.75"/>
+  <rect x="191" y="124" width="5" height="19" rx="2" fill="#00c853" opacity="0.65"/>
+  <rect x="200" y="129" width="5" height="14" rx="2" fill="#00c853" opacity="0.5"/>
+  <rect x="209" y="121" width="5" height="22" rx="2" fill="#00c853" opacity="0.6"/>
+
+  <!-- Punto ON AIR -->
+  <circle cx="460" cy="133" r="7" fill="#00c853" opacity="0.9"/>
+  <circle cx="460" cy="133" r="12" fill="none" stroke="#00c853" stroke-width="1" opacity="0.35"/>
+  <circle cx="460" cy="133" r="17" fill="none" stroke="#00c853" stroke-width="0.5" opacity="0.18"/>
+  <text x="445" y="113" font-family="'Segoe UI',Arial,sans-serif" font-size="8" fill="#444" text-anchor="middle" letter-spacing="1">ON AIR</text>
+
+</svg>
