@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunikados Audio Encoder</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111;color:#e0e0e0;font-family:'Segoe UI',sans-serif;font-size:13px;user-select:none;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#111}
+::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+#titlebar{background:#0a0a0a;height:42px;display:flex;align-items:center;padding:0 14px;-webkit-app-region:drag;border-bottom:1px solid #1e1e1e;flex-shrink:0}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.badges{display:flex;gap:5px;margin-left:auto;align-items:center;-webkit-app-region:no-drag}
+.badge{background:#161616;border:1px solid #252525;padding:2px 8px;border-radius:3px;font-size:10px;color:#555}
+.badge b{color:#00c853;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:#ff4444;transition:.3s;display:inline-block}
+.dot.live{background:#00c853;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.win-btns{display:flex;gap:0;margin-left:12px;-webkit-app-region:no-drag}
+.wbtn{width:32px;height:22px;border:none;background:transparent;color:#555;font-size:11px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center}
+.wbtn:hover{background:#333;color:#fff}
+#wclose:hover{background:#ff4444;color:#fff}
+#ffmpeg-alert{display:none;position:absolute;top:42px;left:0;right:0;background:#1a0a00;border-bottom:1px solid #ff6600;padding:8px 16px;align-items:center;gap:10px;z-index:99}
+.alert-icon{font-size:16px}
+.alert-txt{font-size:11px;color:#ff9900;flex:1}
+.alert-link{font-size:11px;color:#00c853;cursor:pointer;text-decoration:underline}
+#body{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.panels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#1a1a1a;flex-shrink:0}
+.panel{background:#161616;padding:11px 13px}
+.ph{display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid #1f1f1f}
+.ph-icon{font-size:15px}
+.ph-title{font-size:10px;font-weight:600;color:#888;letter-spacing:1.5px;text-transform:uppercase}
+.tabs{display:flex;gap:2px;margin-bottom:10px}
+.tab{padding:3px 11px;border-radius:3px;font-size:11px;cursor:pointer;border:1px solid #2a2a2a;background:#0e0e0e;color:#666;transition:.1s}
+.tab.on{background:#00c853;color:#000;border-color:#00c853;font-weight:700}
+.tab:hover:not(.on){background:#1f1f1f;color:#aaa}
+.f{margin-bottom:8px}
+.f label{display:block;font-size:9px;color:#555;margin-bottom:3px;text-transform:uppercase;letter-spacing:.8px}
+.f input,.f select{width:100%;background:#0d0d0d;border:1px solid #222;color:#ccc;padding:5px 7px;font-size:12px;border-radius:3px;outline:none;font-family:'Segoe UI',sans-serif}
+.f input:focus,.f select:focus{border-color:#00c853;color:#eee}
+.f select{cursor:pointer}
+.f select option{background:#1a1a1a;color:#ccc}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.trow{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.tlabel{font-size:11px;color:#777}
+.sw{position:relative;width:32px;height:17px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw-slider{position:absolute;cursor:pointer;inset:0;background:#252525;border-radius:8px;transition:.2s}
+.sw-slider:before{position:absolute;content:"";height:11px;width:11px;left:3px;bottom:3px;background:#555;border-radius:50%;transition:.2s}
+.sw input:checked+.sw-slider{background:#00c853}
+.sw input:checked+.sw-slider:before{transform:translateX(15px);background:#fff}
+.dsp-box{background:#0d0d0d;border:1px solid #1f1f1f;border-radius:4px;padding:8px 10px;margin-top:6px}
+.dsp-title{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.eq-row{background:#141414;padding:10px 13px;border-top:1px solid #1a1a1a;flex-shrink:0}
+.eq-header{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.eq-bands{display:flex;gap:3px;align-items:flex-end;height:78px}
+.eq-band{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.eq-band input[type=range]{writing-mode:vertical-lr;direction:rtl;width:16px;height:58px;cursor:pointer;accent-color:#00c853}
+.eq-band span{font-size:9px;color:#444}
+.eq-val{font-size:9px;color:#00c853;min-width:14px;text-align:center}
+.eq-reset{margin-left:auto;background:#1a1a1a;border:1px solid #2a2a2a;color:#666;padding:2px 8px;font-size:10px;border-radius:3px;cursor:pointer}
+.eq-reset:hover{background:#252525;color:#aaa}
+.meters{background:#0e0e0e;padding:9px 13px;border-top:1px solid #1a1a1a;flex-shrink:0}
+.meter-title{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.mrow{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.mch{font-size:10px;color:#444;width:12px;flex-shrink:0}
+.mbar{flex:1;height:12px;background:#0a0a0a;border-radius:2px;overflow:hidden}
+.mfill{height:100%;width:5%;background:linear-gradient(to right,#00c853 0%,#00c853 60%,#fdd835 78%,#ff5252 100%);transition:width .07s linear;border-radius:2px}
+.mdb{font-size:9px;color:#333;width:24px;text-align:right;flex-shrink:0}
+#bottombar{background:#0a0a0a;height:52px;display:flex;align-items:center;padding:0 16px;border-top:1px solid #1a1a1a;gap:12px;flex-shrink:0}
+.timer{font-family:'Courier New',monospace;font-size:20px;color:#ff4444;letter-spacing:2px;transition:.3s}
+.timer.live{color:#00c853}
+.timer-label{font-size:8px;color:#2a2a2a;text-transform:uppercase;letter-spacing:1px;margin-top:1px}
+.log-area{flex:1;background:#0d0d0d;border:1px solid #1e1e1e;border-radius:3px;height:32px;overflow:hidden;padding:0 7px;display:flex;align-items:center}
+.log-text{font-size:10px;color:#3a6a3a;font-family:'Courier New',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-start{background:#00c853;color:#000;border:none;padding:8px 22px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:4px;text-transform:uppercase;transition:.1s;white-space:nowrap}
+.btn-start:hover{background:#00e676}
+.btn-start.stop{background:#ff5252;color:#fff}
+.btn-start.stop:hover{background:#ff6e6e}
+.btn-start:active{transform:scale(.97)}
+</style>
+</head>
+<body>
+
+<div id="titlebar">
+  <div class="logo-wrap">
+    <img src="../assets/logo.svg" alt="Comunikados Audio Encoder" style="height:30px;width:auto;display:block">
+  </div>
+  <div class="badges">
+    <div class="badge">Codec: <b id="b-codec">MP3</b></div>
+    <div class="badge">Bitrate: <b id="b-bitrate">128 kbps</b></div>
+    <div class="badge"><span class="dot" id="b-dot"></span> <b id="b-status">STANDBY</b></div>
+  </div>
+  <div class="win-btns">
+    <button class="wbtn" onclick="window.encoder.minimize()">&#8211;</button>
+    <button class="wbtn" onclick="window.encoder.maximize()">&#9633;</button>
+    <button class="wbtn" id="wclose" onclick="window.encoder.close()">&#10005;</button>
+  </div>
+</div>
+
+<div id="ffmpeg-alert">
+  <span class="alert-icon">⚠️</span>
+  <span class="alert-txt">FFmpeg no encontrado. La app necesita FFmpeg para funcionar.</span>
+  <span class="alert-link" onclick="openLink('https://www.gyan.dev/ffmpeg/builds/')">Descargar FFmpeg</span>
+</div>
+
+<div id="body">
+
+<div class="panels">
+  <div class="panel">
+    <div class="ph"><span class="ph-icon">📡</span><span class="ph-title">Transmisión</span></div>
+    <div class="tabs">
+      <div class="tab on" id="tab-ice" onclick="setTab('icecast')">Icecast</div>
+      <div class="tab" id="tab-shou" onclick="setTab('shoutcast')">Shoutcast</div>
+    </div>
+    <div class="f"><label>IP / Host</label><input type="text" id="host" value="stream.comunikados.cl"></div>
+    <div class="r2">
+      <div class="f"><label>Puerto</label><input type="number" id="port" value="8000"></div>
+      <div class="f"><label>Punto Mont.</label><input type="text" id="mount" value="/live"></div>
+    </div>
+    <div class="f"><label>Contraseña</label><input type="password" id="pass" value="hackme123"></div>
+    <div class="f"><label>Nombre emisora</label><input type="text" id="sname" value="Radio Comunikados"></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><span class="ph-icon">⚙️</span><span class="ph-title">Codificación</span></div>
+    <div class="f">
+      <label>Códec</label>
+      <select id="codec" onchange="updateBadges()">
+        <option value="mp3">MP3</option>
+        <option value="aac">AAC</option>
+        <option value="opus">Opus (Ultra Low Latency)</option>
+        <option value="ogg">OGG Vorbis</option>
+      </select>
+    </div>
+    <div class="r2">
+      <div class="f">
+        <label>Bitrate</label>
+        <select id="bitrate" onchange="updateBadges()">
+          <option>32 kbps</option><option>64 kbps</option>
+          <option selected>128 kbps</option><option>192 kbps</option>
+          <option>256 kbps</option><option>320 kbps</option>
+        </select>
+      </div>
+      <div class="f">
+        <label>Sample Rate</label>
+        <select id="samplerate">
+          <option>22050</option><option selected>44100</option><option>48000</option>
+        </select>
+      </div>
+    </div>
+    <div class="r2">
+      <div class="f">
+        <label>Canales</label>
+        <select id="channels"><option>Mono</option><option selected>Estéreo</option></select>
+      </div>
+      <div class="f">
+        <label>Calidad</label>
+        <select id="quality"><option>Normal</option><option selected>Alta</option><option>Máxima</option></select>
+      </div>
+    </div>
+    <div class="trow"><span class="tlabel">VBR (Variable Bitrate)</span><label class="sw"><input type="checkbox" id="vbr"><span class="sw-slider"></span></label></div>
+    <div class="trow"><span class="tlabel">Reconexión automática</span><label class="sw"><input type="checkbox" id="reconnect" checked><span class="sw-slider"></span></label></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><span class="ph-icon">🎙️</span><span class="ph-title">Entrada & DSP</span></div>
+    <div class="f">
+      <label>Dispositivo de audio</label>
+      <select id="device"><option>Cargando dispositivos...</option></select>
+    </div>
+    <div class="f"><label>Metadata — Título en vivo</label><input type="text" id="meta" value="Radio Comunikados · En Vivo"></div>
+    <div class="f" style="display:flex;gap:5px">
+      <input type="text" id="txtpath" placeholder="Metadata .txt (opcional)" readonly style="flex:1;color:#444;font-size:11px">
+      <button onclick="browseTxt()" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#777;padding:0 8px;border-radius:3px;cursor:pointer;font-size:11px">📂</button>
+    </div>
+    <div class="dsp-box">
+      <div class="dsp-title">Procesador de audio DSP</div>
+      <div class="trow"><span class="tlabel">Compresor</span><label class="sw"><input type="checkbox" id="dsp-comp" checked><span class="sw-slider"></span></label></div>
+      <div class="trow"><span class="tlabel">Noise Gate</span><label class="sw"><input type="checkbox" id="dsp-gate"><span class="sw-slider"></span></label></div>
+      <div class="trow"><span class="tlabel">Limitador</span><label class="sw"><input type="checkbox" id="dsp-limit" checked><span class="sw-slider"></span></label></div>
+      <div class="trow" style="margin-bottom:0"><span class="tlabel">Normalizador</span><label class="sw"><input type="checkbox" id="dsp-norm"><span class="sw-slider"></span></label></div>
+    </div>
+  </div>
+</div>
+
+<div class="eq-row">
+  <div class="eq-header">
+    <span style="font-size:10px;font-weight:600;color:#666;letter-spacing:1.5px;text-transform:uppercase">🎛️ Ecualizador — 10 bandas</span>
+    <button class="eq-reset" onclick="resetEq()">Reset</button>
+  </div>
+  <div class="eq-bands" id="eq-bands"></div>
+</div>
+
+<div class="meters">
+  <div class="meter-title">Nivel de salida al encoder (dB)</div>
+  <div class="mrow"><span class="mch">L</span><div class="mbar"><div class="mfill" id="mL"></div></div><span class="mdb" id="dbL">-∞</span></div>
+  <div class="mrow"><span class="mch">R</span><div class="mbar"><div class="mfill" id="mR"></div></div><span class="mdb" id="dbR">-∞</span></div>
+</div>
+
+</div>
+
+<div id="bottombar">
+  <div>
+    <div class="timer" id="timer">00:00:00</div>
+    <div class="timer-label">Tiempo en vivo</div>
+  </div>
+  <div class="log-area"><span class="log-text" id="logtext">Listo · Esperando inicio de transmisión</span></div>
+  <button class="btn-start" id="startbtn" onclick="toggleStream()">START TRANSMISSION</button>
+</div>
+
+<script>
+const EQ_FREQS=['32','64','125','250','500','1k','2k','4k','8k','16k']
+const eqVals=new Array(10).fill(0)
+const eqC=document.getElementById('eq-bands')
+EQ_FREQS.forEach((f,i)=>{
+  const b=document.createElement('div')
+  b.className='eq-band'
+  b.innerHTML=`<span class="eq-val" id="eqv${i}">0</span><input type="range" min="-12" max="12" value="0" step="1" oninput="eqVals[${i}]=parseInt(this.value);document.getElementById('eqv${i}').textContent=this.value"><span>${f}</span>`
+  eqC.appendChild(b)
+})
+function resetEq(){document.querySelectorAll('#eq-bands input[type=range]').forEach((r,i)=>{r.value=0;eqVals[i]=0;document.getElementById('eqv'+i).textContent='0'})}
+
+let serverType='icecast'
+function setTab(type){
+  serverType=type
+  document.getElementById('tab-ice').classList.toggle('on',type==='icecast')
+  document.getElementById('tab-shou').classList.toggle('on',type==='shoutcast')
+  document.getElementById('port').value=type==='icecast'?'8000':'8005'
+  document.getElementById('mount').style.opacity=type==='icecast'?'1':'0.4'
+}
+function updateBadges(){
+  document.getElementById('b-codec').textContent=document.getElementById('codec').selectedOptions[0].text.split(' ')[0]
+  document.getElementById('b-bitrate').textContent=document.getElementById('bitrate').value
+}
+async function loadDevices(){
+  if(!window.encoder)return
+  const devs=await window.encoder.getDevices()
+  const sel=document.getElementById('device')
+  sel.innerHTML=devs.map(d=>`<option>${d}</option>`).join('')
+}
+loadDevices()
+async function browseTxt(){
+  const p=await window.encoder.browseTxt()
+  if(p)document.getElementById('txtpath').value=p
+}
+
+let streaming=false,sec=0,timerInt=null,meterInt=null
+function setStatus(live){
+  document.getElementById('b-dot').classList.toggle('live',live)
+  document.getElementById('b-status').textContent=live?'ON AIR':'STANDBY'
+  document.getElementById('timer').classList.toggle('live',live)
+}
+function setLog(msg){document.getElementById('logtext').textContent=msg.replace(/\n/g,' ').trim().slice(-120)}
+
+async function toggleStream(){
+  if(!streaming){
+    const config={
+      device:document.getElementById('device').value,
+      host:document.getElementById('host').value,
+      port:document.getElementById('port').value,
+      mount:document.getElementById('mount').value,
+      password:document.getElementById('pass').value,
+      codec:document.getElementById('codec').value,
+      bitrate:document.getElementById('bitrate').value,
+      sampleRate:document.getElementById('samplerate').value,
+      channels:document.getElementById('channels').value,
+      vbr:document.getElementById('vbr').checked,
+      metadata:document.getElementById('meta').value,
+      serverType,
+      compressor:document.getElementById('dsp-comp').checked,
+      noisegate:document.getElementById('dsp-gate').checked,
+      limiter:document.getElementById('dsp-limit').checked,
+      normalizer:document.getElementById('dsp-norm').checked,
+      eq:[...eqVals]
+    }
+    const r=window.encoder?await window.encoder.startStream(config):{ok:true}
+    if(r.ok){
+      streaming=true;sec=0
+      document.getElementById('startbtn').textContent='STOP TRANSMISSION'
+      document.getElementById('startbtn').classList.add('stop')
+      setStatus(true);setLog('Conectando al servidor...')
+      timerInt=setInterval(()=>{sec++;const h=String(Math.floor(sec/3600)).padStart(2,'0');const m=String(Math.floor(sec%3600/60)).padStart(2,'0');const s=String(sec%60).padStart(2,'0');document.getElementById('timer').textContent=`${h}:${m}:${s}`},1000)
+      meterInt=setInterval(animateMeter,80)
+    }else{setLog('Error: '+r.error)}
+  }else{
+    if(window.encoder)await window.encoder.stopStream()
+    stopUI()
+  }
+}
+function stopUI(){
+  streaming=false;clearInterval(timerInt);clearInterval(meterInt)
+  document.getElementById('startbtn').textContent='START TRANSMISSION'
+  document.getElementById('startbtn').classList.remove('stop')
+  document.getElementById('timer').textContent='00:00:00'
+  setStatus(false)
+  document.getElementById('mL').style.width='5%'
+  document.getElementById('mR').style.width='5%'
+  document.getElementById('dbL').textContent='-∞'
+  document.getElementById('dbR').textContent='-∞'
+  setLog('Transmisión detenida')
+}
+function animateMeter(){
+  const l=Math.min(95,Math.max(5,Math.random()*50+15))
+  const r=Math.min(95,Math.max(5,Math.random()*50+15))
+  document.getElementById('mL').style.width=l+'%'
+  document.getElementById('mR').style.width=r+'%'
+  const toDb=p=>p<5?'-∞':Math.round(-60+p*0.6).toString()
+  document.getElementById('dbL').textContent=toDb(l)
+  document.getElementById('dbR').textContent=toDb(r)
+}
+if(window.encoder){
+  window.encoder.onFfmpegLog(msg=>setLog(msg))
+  window.encoder.onStreamStopped(code=>{if(streaming){stopUI();setLog(code===0?'Transmisión finalizada':`FFmpeg terminó (código ${code})`)}})
+  window.encoder.onStreamError(msg=>{stopUI();setLog('Error: '+msg)})
+  window.encoder.onFfmpegMissing(()=>{document.getElementById('ffmpeg-alert').style.display='flex'})
+}
+</script>
+</body>
+</html>
