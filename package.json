@@ -1,9 +1,9 @@
 {
   "name": "comunikados-audio-encoder",
   "version": "1.0.0",
-  "description": "Professional radio streaming encoder — Icecast & Shoutcast",
+  "description": "Professional radio streaming encoder",
   "main": "src/main.js",
-  "author": "Grup Comunikados <tuciudadlatina@gmail.com>",
+  "author": "Grup Comunikados",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
