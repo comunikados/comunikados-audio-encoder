@@ -31,7 +31,7 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "comunicados",
+      "owner": "comunikados",
       "repo": "comunikados-audio-encoder"
     }
   }
