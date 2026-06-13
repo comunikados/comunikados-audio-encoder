@@ -197,4 +197,3 @@ function buildArgs(cfg) {
     outputUrl
   ]
 }
-
