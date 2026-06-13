@@ -1,0 +1,55 @@
+{
+  "name": "comunikados-audio-encoder",
+  "version": "1.0.0",
+  "description": "Professional radio streaming encoder — Icecast & Shoutcast",
+  "main": "src/main.js",
+  "author": "Grup Comunikados <tuciudadlatina@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "cl.comunikados.audioencoder",
+    "productName": "Comunikados Audio Encoder",
+    "copyright": "Copyright © 2025 Grup Comunikados — comunikados.cl",
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "resources/ffmpeg/ffmpeg.exe",
+        "to": "ffmpeg/ffmpeg.exe"
+      }
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "publisherName": "Grup Comunikados"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowDirChange": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Comunikados Audio Encoder",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeader": "assets/installer-header.bmp",
+      "license": "LICENSE.txt",
+      "language": "3082"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "TU_USUARIO_GITHUB",
+      "repo": "comunikados-audio-encoder"
+    }
+  }
+}
