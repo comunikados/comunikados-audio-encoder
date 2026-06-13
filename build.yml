@@ -1,0 +1,61 @@
+name: Build & Release Windows EXE
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download FFmpeg
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
+          Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg-extract"
+          $ffmpegExe = Get-ChildItem -Path "ffmpeg-extract" -Recurse -Filter "ffmpeg.exe" | Select-Object -First 1
+          New-Item -ItemType Directory -Force -Path "resources/ffmpeg"
+          Copy-Item $ffmpegExe.FullName -Destination "resources/ffmpeg/ffmpeg.exe"
+        shell: pwsh
+
+      - name: Build Windows installer
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.exe
+          name: "Comunikados Audio Encoder ${{ github.ref_name }}"
+          body: |
+            ## Comunikados Audio Encoder ${{ github.ref_name }}
+
+            ### Descarga
+            - **`...Setup.exe`** — Instalador completo (recomendado)
+            - **`...portable.exe`** — Versión portable, no requiere instalación
+
+            ### Requisitos
+            - Windows 10 / 11 (64-bit)
+            - Sin dependencias adicionales — FFmpeg incluido
+
+            ### Instalación
+            1. Descarga el archivo `Setup.exe`
+            2. Ejecuta como administrador
+            3. Sigue el asistente de instalación
+            4. Abre desde el acceso directo del escritorio
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
